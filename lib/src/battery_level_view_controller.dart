@@ -1,10 +1,9 @@
 part of batterylevel; 
-import 'package:flutter/material.dart';
 
 class BatteryLevelViewController {
    StreamController _flutterToEvaluteStream;
    MethodChannel _battery_view_channel;
-   EventChannel _battery_view_event_channel; 
+   EventChannel _battery_view_event_channel = new EventChannel('eventSink'); 
    StreamSubscription _eventSinkStreamSubscription;
   
    BatteryLevelViewController({@required int viewId, StreamController flutterToEvaluteStream})

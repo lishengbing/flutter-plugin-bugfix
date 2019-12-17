@@ -10,7 +10,6 @@ void main() => runApp(MyApp());
 
 //Constants:
 
- 
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
@@ -20,8 +19,8 @@ class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   int _batterylevel = -1;
 
-  StreamController<String> _nativeToEvaluteStream; 
-  StreamController<String> _flutterToEvaluteStream; 
+  StreamController<String> _nativeToEvaluteStream;
+  StreamController<String> _flutterToEvaluteStream;
   StreamSubscription<String> _subscription;
 
   TextEditingController _textEditRecieveNative;
@@ -31,15 +30,15 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
-      _nativeToEvaluteStream = StreamController();
-      _flutterToEvaluteStream = StreamController();
-     _subscription = _flutterToEvaluteStream.stream.listen((natvieText){
-       setState(() {
+    _nativeToEvaluteStream = StreamController();
+    _flutterToEvaluteStream = StreamController();
+    _subscription = _flutterToEvaluteStream.stream.listen((natvieText) {
+      setState(() {
         //  if (natvieText == "clicked eventSink button") {
 
         //  }
-         _textEditRecieveNative.text = natvieText;
-       });
+        _textEditRecieveNative.text = natvieText;
+      });
     });
     _textEditRecieveNative = TextEditingController();
     _textEditSendToNative = TextEditingController();
@@ -53,20 +52,19 @@ class _MyAppState extends State<MyApp> {
     try {
       platformVersion = await Batterylevel.platformVersion;
       batteryLevel = await Batterylevel.getBatteryLevel;
+      setState(() {
+        _platformVersion = platformVersion;
+        _batterylevel = batteryLevel;
+      });
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
       batteryLevel = -1;
     }
-  
+
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-      _batterylevel =  batteryLevel;
-    });
   }
 
   @override
@@ -94,22 +92,27 @@ class _MyAppState extends State<MyApp> {
             _buildFlutterView(context)
           ],
         ),
-        ),
+      ),
     );
   }
 
   Widget _buildNativeView(BuildContext context) {
-      // double width =  MediaQuery.of(context).size.width - 20.0;
-      // double height = MediaQuery.of(context).devicePixelRatio * 220;
-      return Column(
-        children: <Widget>[
-          Container(
-            width: 300.0,
-            height: 180.0,
-            child: BatterLevelView(300.0, 180.0,flutterToEvaluteStream: _flutterToEvaluteStream, nativeToEvalueStream: _nativeToEvaluteStream,),
-          )
-        ],
-      );
+    // double width =  MediaQuery.of(context).size.width - 20.0;
+    // double height = MediaQuery.of(context).devicePixelRatio * 220;
+    return Column(
+      children: <Widget>[
+        Container(
+          width: 300.0,
+          height: 180.0,
+          child: BatterLevelView(
+            300.0,
+            180.0,
+            flutterToEvaluteStream: _flutterToEvaluteStream,
+            nativeToEvalueStream: _nativeToEvaluteStream,
+          ),
+        )
+      ],
+    );
   }
 
   Widget _buildFlutterView(BuildContext context) {
@@ -123,49 +126,57 @@ class _MyAppState extends State<MyApp> {
           height: 300,
           child: Column(
             children: <Widget>[
-               TextFormField(
+              TextFormField(
                 decoration: InputDecoration(
                   icon: Icon(Icons.add),
                   helperText: "输入文字发送到native端",
                 ),
                 controller: _textEditSendToNative,
-                onFieldSubmitted: (text){
-                  if (_nativeToEvaluteStream.sink != null){
-                      _nativeToEvaluteStream.sink.add(text);
+                onFieldSubmitted: (text) {
+                  if (_nativeToEvaluteStream.sink != null) {
+                    _nativeToEvaluteStream.sink.add(text);
                   }
                 },
-               ),
+              ),
               FlatButton(
-                    color: Colors.blue,
-                    child: Text("发送至Natvie", overflow: TextOverflow.fade, softWrap: true, textAlign: TextAlign.center,), 
-                  onPressed: (){
-                    if (_nativeToEvaluteStream.sink != null){
-                      _nativeToEvaluteStream.sink.add( _textEditSendToNative.text);
+                color: Colors.blue,
+                child: Text(
+                  "发送至Natvie",
+                  overflow: TextOverflow.fade,
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                ),
+                onPressed: () {
+                  if (_nativeToEvaluteStream.sink != null) {
+                    _nativeToEvaluteStream.sink.add(_textEditSendToNative.text);
                   }
-             },),
-             TextFormField(
+                },
+              ),
+              TextFormField(
                 decoration: InputDecoration(
                   icon: Icon(Icons.add),
                   helperText: "接受来自Native的文字",
                 ),
                 controller: _textEditRecieveNative,
-                onFieldSubmitted: (text){ 
-
+                onFieldSubmitted: (text) {},
+              ),
+              FlatButton(
+                color: Colors.blue,
+                child: Text(
+                  "已开启native event sink广播",
+                  overflow: TextOverflow.fade,
+                  softWrap: true,
+                  textAlign: TextAlign.center,
+                ),
+                onPressed: () {
+                  //关闭或打开 EventChannel的订阅同时修改button文字
                 },
-               ),
-               FlatButton(
-                    color: Colors.blue,
-                    child: Text("已开启native event sink广播", overflow: TextOverflow.fade, softWrap: true, textAlign: TextAlign.center,), 
-                  onPressed: (){
-                    //关闭或打开 EventChannel的订阅同时修改button文字
-                   },
-             ),
+              ),
             ],
           ),
         )
       ],
     );
- 
   }
 
   @override
