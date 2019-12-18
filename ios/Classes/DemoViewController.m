@@ -29,14 +29,14 @@
         /***/
         NSString* channelName = [NSString stringWithFormat:@"flutter.io/batterylevel_view_%lld",viewId];
         //[FlutterStandardMethodCodec sharedInstance]
-        _channel = [[FlutterMethodChannel alloc]initWithName:channelName binaryMessenger:registrar.messenger codec:NULL];
+        _channel = [[FlutterMethodChannel alloc]initWithName:channelName binaryMessenger:registrar.messenger codec:[FlutterStandardMethodCodec sharedInstance]];
         
         
         
         typeof(self) weakSelf = self;
         [_channel setMethodCallHandler:^(FlutterMethodCall * _Nonnull call, FlutterResult  _Nonnull result) {
             if ([call.method isEqualToString:@"nativeToEvalute"] && weakSelf){
-               // weakSelf->_view.recieveTextField.text = (NSString*)call.arguments;
+               weakSelf->_view.recieveTextField.text = (NSString*)call.arguments;
             }
         }];
         
