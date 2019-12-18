@@ -49,12 +49,15 @@
 
 - (void)clcikSendButton:(UIButton*)btn {
     //_view.sendTextField.text
+    if (_eventSink != NULL) {
+        _eventSink(_view.sendTextField.text)
+    }
 
 }
 
 - (void)clickSinkEventButton: (UIButton*)btn {
     if (_eventSink != NULL) {
-        _eventSink(@"clicked eventSink button");
+        _eventSink(_view.recieveTextField.text)
     }
 }
 //***
